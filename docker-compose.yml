@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_soporte
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: microservicio_soporte
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ADMIN

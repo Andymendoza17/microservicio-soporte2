@@ -1,0 +1,5 @@
+### GET request to example serverPostman
+GET http://localhost:8085/api/tickets
+
+
+###

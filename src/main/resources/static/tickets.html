@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestión de Tickets de Soporte</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a2847 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2563eb;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-section {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            padding: 10px 12px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            background: #0f172a;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .btn-search {
+            background: #10b981;
+            color: white;
+            padding: 10px 15px;
+            font-size: 13px;
+        }
+
+        .btn-search:hover {
+            background: #059669;
+        }
+
+        .search-section {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            grid-column: 1 / -1;
+        }
+
+        .search-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .tickets-section {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            grid-column: 1 / -1;
+        }
+
+        .tickets-section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .data-table thead {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .data-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #cbd5e1;
+            border-bottom: 2px solid #475569;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .data-table tbody tr.selected {
+            background: rgba(37, 99, 235, 0.2);
+            border-left: 3px solid #2563eb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .empty-state {
+            background: rgba(15, 23, 42, 0.3);
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            color: #94a3b8;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            color: #fca5a5;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            color: #6ee7b7;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 3px solid #2563eb;
+            padding: 15px;
+            border-radius: 8px;
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎫 Sistema de Gestión de Tickets</h1>
+        <p>Crea y administra solicitudes de soporte técnico de forma eficiente</p>
+    </div>
+
+    <div class="content">
+        <!-- Formulario de Búsqueda de Cliente -->
+        <div class="search-section">
+            <h2>📋 Buscar Cliente</h2>
+            <div class="search-container">
+                <div class="form-group">
+                    <label for="cedula">Número de Cédula</label>
+                    <input type="text" id="cedula" placeholder="Ej: 1234567890">
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn-search" onclick="buscarClientePorCedula()">🔍 Buscar</button>
+                </div>
+            </div>
+            <div id="clienteInfo"></div>
+        </div>
+
+        <!-- Tabla de Clientes -->
+        <div class="search-section">
+            <h2>👥 Listado de Clientes</h2>
+            <div id="clientesGrid"></div>
+        </div>
+
+        <!-- Formulario de Creación de Ticket -->
+        <div class="form-section">
+            <h2>✏️ Crear Nuevo Ticket</h2>
+            <div id="formError"></div>
+            
+            <div class="form-group">
+                <label for="clienteSelect">Cliente *</label>
+                <select id="clienteSelect">
+                    <option value="">-- Seleccionar cliente --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción del Problema *</label>
+                <textarea id="descripcion" placeholder="Describe el problema que estás experimentando..."></textarea>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="productoSelect">Producto *</label>
+                    <select id="productoSelect">
+                        <option value="">-- Seleccionar producto --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ventaSelect">Venta *</label>
+                    <select id="ventaSelect">
+                        <option value="">-- Seleccionar venta --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="prioridadSelect">Prioridad *</label>
+                    <select id="prioridadSelect">
+                        <option value="">-- Seleccionar prioridad --</option>
+                        <option value="1">Alta</option>
+                        <option value="2">Media</option>
+                        <option value="3">Baja</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoSelect">Tipo de Incidente *</label>
+                    <select id="tipoSelect">
+                        <option value="">-- Seleccionar tipo --</option>
+                        <option value="1">Error</option>
+                        <option value="2">Consulta</option>
+                        <option value="3">Solicitud de Cambio</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="crearTicket()">📤 Crear Ticket</button>
+                <button class="btn-secondary" onclick="limpiarFormulario()">🔄 Limpiar</button>
+            </div>
+        </div>
+
+        <!-- Lista de Tickets -->
+        <div class="tickets-section">
+            <h2>📊 Mis Tickets Recientes</h2>
+            <div id="ticketsGrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let clientesDisponibles = [];
+    let clienteSeleccionado = null;
+
+    // Cargar datos al iniciar
+    window.addEventListener('DOMContentLoaded', function() {
+        cargarClientes();
+        cargarTickets();
+    });
+
+    function cargarClientes() {
+        console.log('Cargando clientes...');
+        fetch('/api/clientes')
+            .then(res => {
+                if (!res.ok) throw new Error('Error ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('Clientes:', data);
+                clientesDisponibles = data || [];
+                actualizarComboClientes();
+                mostrarTablaCientes();
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById('clientesGrid').innerHTML = `<div class="error">⚠️ No se pudieron cargar los clientes. ${err.message}</div>`;
+            });
+    }
+
+    function actualizarComboClientes() {
+        const combo = document.getElementById('clienteSelect');
+        combo.innerHTML = '<option value="">-- Seleccionar cliente --</option>';
+        clientesDisponibles.forEach(cliente => {
+            const option = document.createElement('option');
+            option.value = cliente.idCliente || cliente.id;
+            option.textContent = `${cliente.nombre || cliente.name} (Cédula: ${cliente.cedula})`;
+            combo.appendChild(option);
+        });
+    }
+
+    function mostrarTablaCientes() {
+        const grid = document.getElementById('clientesGrid');
+        if (!clientesDisponibles || clientesDisponibles.length === 0) {
+            grid.innerHTML = '<div class="empty-state"><p>No hay clientes disponibles</p></div>';
+            return;
+        }
+
+        let html = `<table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cédula</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        clientesDisponibles.forEach(cliente => {
+            html += `<tr onclick="seleccionarCliente(${cliente.idCliente || cliente.id}, '${cliente.nombre || cliente.name}')">
+                <td>#${cliente.idCliente || cliente.id}</td>
+                <td><strong>${cliente.nombre || cliente.name}</strong></td>
+                <td>${cliente.cedula}</td>
+                <td>${cliente.email || 'N/A'}</td>
+                <td>${cliente.telefono || 'N/A'}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        grid.innerHTML = html;
+    }
+
+    function seleccionarCliente(id, nombre) {
+        clienteSeleccionado = id;
+        document.getElementById('clienteSelect').value = id;
+        document.getElementById('clienteInfo').innerHTML = `<div class="success">✅ Cliente seleccionado: <strong>${nombre}</strong></div>`;
+        
+        // Scroll al formulario
+        document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function buscarClientePorCedula() {
+        const cedula = document.getElementById('cedula').value.trim();
+        if (!cedula) {
+            document.getElementById('clienteInfo').innerHTML = '<div class="error">⚠️ Por favor ingresa una cédula</div>';
+            return;
+        }
+
+        const cliente = clientesDisponibles.find(c => c.cedula === cedula);
+        const info = document.getElementById('clienteInfo');
+
+        if (cliente) {
+            seleccionarCliente(cliente.idCliente || cliente.id, cliente.nombre || cliente.name);
+        } else {
+            info.innerHTML = '<div class="error">❌ Cliente no encontrado con cédula: ' + cedula + '</div>';
+        }
+    }
+
+    function crearTicket() {
+        const clienteId = document.getElementById('clienteSelect').value;
+        const descripcion = document.getElementById('descripcion').value.trim();
+        const productoId = document.getElementById('productoSelect').value;
+        const ventaId = document.getElementById('ventaSelect').value;
+        const prioridadId = document.getElementById('prioridadSelect').value;
+        const tipoId = document.getElementById('tipoSelect').value;
+
+        const formError = document.getElementById('formError');
+
+        if (!clienteId || !descripcion || !productoId || !ventaId || !prioridadId || !tipoId) {
+            formError.innerHTML = '<div class="error">⚠️ Por favor completa todos los campos marcados con *</div>';
+            return;
+        }
+
+        formError.innerHTML = '';
+
+        fetch('/api/tickets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                descripcion: descripcion,
+                idCliente: parseInt(clienteId),
+                idProducto: parseInt(productoId),
+                idVenta: parseInt(ventaId),
+                prioridad: { idPrioridad: parseInt(prioridadId) },
+                tipo: { idTipo: parseInt(tipoId) }
+            })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Error al crear ticket');
+            formError.innerHTML = '<div class="success">✅ ¡Ticket creado exitosamente!</div>';
+            limpiarFormulario();
+            setTimeout(() => cargarTickets(), 1000);
+        })
+        .catch(err => {
+            formError.innerHTML = '<div class="error">❌ Error: ' + err.message + '</div>';
+        });
+    }
+
+    function cargarTickets() {
+        console.log('Cargando tickets...');
+        fetch('/api/tickets')
+            .then(res => {
+                if (!res.ok) throw new Error('Error ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('Tickets:', data);
+                mostrarTickets(data);
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById('ticketsGrid').innerHTML = `<div class="error">⚠️ Error al cargar tickets: ${err.message}</div>`;
+            });
+    }
+
+    function mostrarTickets(tickets) {
+        const grid = document.getElementById('ticketsGrid');
+        if (!tickets || tickets.length === 0) {
+            grid.innerHTML = '<div class="empty-state"><p>📭 No hay tickets aún. ¡Crea uno!</p></div>';
+            return;
+        }
+
+        let html = `<table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                    <th>Cliente</th>
+                    <th>Estado</th>
+                    <th>Prioridad</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        tickets.forEach(ticket => {
+            const estadoColor = ticket.estado?.nombre === 'Abierto' ? 'badge-primary' : 'badge-success';
+            const prioridadColor = ticket.prioridad?.nombre === 'Alta' ? 'badge-warning' : 'badge-primary';
+
+            html += `<tr>
+                <td><strong>#${ticket.idTicket}</strong></td>
+                <td>${ticket.descripcion || 'Sin descripción'}</td>
+                <td>${ticket.idCliente}</td>
+                <td><span class="badge ${estadoColor}">${ticket.estado?.nombre || 'N/A'}</span></td>
+                <td><span class="badge ${prioridadColor}">${ticket.prioridad?.nombre || 'N/A'}</span></td>
+                <td>${ticket.fechaCreacion?.split('T')[0] || 'N/A'}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        grid.innerHTML = html;
+    }
+
+    function limpiarFormulario() {
+        document.getElementById('descripcion').value = '';
+        document.getElementById('productoSelect').value = '';
+        document.getElementById('ventaSelect').value = '';
+        document.getElementById('prioridadSelect').value = '';
+        document.getElementById('tipoSelect').value = '';
+        document.getElementById('formError').innerHTML = '';
+    }
+
+    // Permitir buscar con Enter
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('cedula')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') buscarClientePorCedula();
+        });
+    });
+</script>
+
+</body>
+</html>
