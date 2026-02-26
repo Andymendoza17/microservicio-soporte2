@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Solicitudes</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Mis Solicitudes</h2>
+
+    <div id="tablaTickets"></div>
+
+    <br>
+    <button onclick="window.location.href='panel-cliente.html'">
+        ⬅ Volver al Panel
+    </button>
+</div>
+
+<script>
+
+    window.onload = function () {
+        cargarMisTickets();
+    };
+
+    function cargarMisTickets() {
+
+        const idUsuario = localStorage.getItem("idUsuario");
+
+        fetch("/api/tickets/usuario/" + idUsuario)
+            .then(res => res.json())
+            .then(data => {
+
+                if (!data || data.length === 0) {
+                    document.getElementById("tablaTickets").innerHTML =
+                        "<p>No tienes solicitudes registradas.</p>";
+                    return;
+                }
+
+                let html = `
+                <table border="1" cellpadding="10">
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th>Fecha</th>
+                    </tr>
+            `;
+
+                data.forEach(ticket => {
+                    html += `
+                    <tr>
+                        <td>${ticket.idTicket}</td>
+                        <td>${ticket.descripcion}</td>
+                        <td>${ticket.estado?.nombre}</td>
+                        <td>${ticket.prioridad?.nombre}</td>
+                        <td>${ticket.fechaCreacion?.split("T")[0]}</td>
+                    </tr>
+                `;
+                });
+
+                html += "</table>";
+
+                document.getElementById("tablaTickets").innerHTML = html;
+            });
+    }
+
+</script>
+
+</body>
+</html>

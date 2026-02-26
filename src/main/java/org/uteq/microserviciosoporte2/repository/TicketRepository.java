@@ -8,7 +8,9 @@ import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
-    Optional<Ticket> findByIdVenta(Integer idVenta);
+    // Buscar por venta externa (si lo necesitas)
+    Optional<Ticket> findByIdVentaExterna(Long idVentaExterna);
 
-    List<Ticket> findByIdCliente(Integer idCliente);
+    // Listar tickets creados por un usuario
+    List<Ticket> findByUsuarioCreador_IdUsuario(Integer idUsuario);
 }

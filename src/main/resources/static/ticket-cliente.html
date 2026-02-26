@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Ticket</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎫 Crear Solicitud de Soporte</h1>
+        <p>Describe tu problema y nuestro equipo te ayudará</p>
+    </div>
+
+    <div class="form-section">
+        <div id="formError"></div>
+
+        <div class="form-group">
+            <label>Descripción del Problema *</label>
+            <textarea id="descripcion"
+                      placeholder="Describe el problema..."></textarea>
+        </div>
+
+        <!-- Prioridad removida: ahora se gestiona internamente -->
+
+        <div class="form-group">
+            <label>Tipo de Incidente *</label>
+            <select id="tipoSelect">
+                <option value="">-- Seleccionar tipo --</option>
+                <option value="1">Error</option>
+                <option value="2">Consulta</option>
+                <option value="3">Solicitud de Cambio</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Adjuntar Documento (opcional)</label>
+            <input type="file" id="documentoInput" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx">
+            <small>Formatos permitidos: PDF, JPG, PNG, DOC</small>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="crearTicketCliente()">
+                📤 Crear Ticket
+            </button>
+
+            <button class="btn-secondary"
+                    onclick="window.location.href='panel-cliente.html'">
+                ⬅ Volver
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function crearTicketCliente() {
+
+        const descripcion = document.getElementById("descripcion").value.trim();
+        const prioridadId = null; // eliminado: prioridad ya no es requerida
+        const tipoId = document.getElementById("tipoSelect").value;
+        const formError = document.getElementById("formError");
+        const idUsuario = localStorage.getItem("idUsuario");
+        const documentoFile = document.getElementById("documentoInput").files[0];
+
+        if (!descripcion || !tipoId) {
+            formError.innerHTML =
+                '<div class="error"> Completa los campos obligatorios</div>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("descripcion", descripcion);
+        formData.append("idProducto", 1);
+        formData.append("idVenta", 1);
+        formData.append("tipo", JSON.stringify({ idTipo: parseInt(tipoId) }));
+        if (documentoFile) {
+            formData.append("documento", documentoFile);
+        }
+
+        fetch("/api/tickets/cliente-usuario/" + idUsuario, {
+            method: "POST",
+            body: formData
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Error al crear ticket");
+                return res.json();
+            })
+            .then(data => {
+                formError.innerHTML =
+                    '<div class="success">✅ Ticket creado correctamente</div>';
+
+                document.getElementById("descripcion").value = "";
+                document.getElementById("documentoInput").value = "";
+                document.getElementById("tipoSelect").value = "";
+            })
+            .catch(err => {
+                formError.innerHTML =
+                    '<div class="error"> ' + err.message + '</div>';
+            });
+    }
+</script>
+
+</body>
+</html>

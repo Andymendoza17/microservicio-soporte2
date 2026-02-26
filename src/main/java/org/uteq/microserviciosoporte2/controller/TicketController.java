@@ -17,59 +17,36 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    // ===== CREAR =====
-    @PostMapping
-    public ResponseEntity<Ticket> crear(@RequestBody Ticket ticket) {
-        return ResponseEntity.ok(ticketService.crearTicket(ticket));
-    }
-
-    // ===== LISTAR =====
-    @GetMapping
-    public ResponseEntity<List<Ticket>> listar() {
-        return ResponseEntity.ok(ticketService.listarTickets());
-    }
-
-    // ===== BUSCAR POR ID =====
-    @GetMapping("/{id}")
-    public ResponseEntity<Ticket> obtenerPorId(@PathVariable Integer id) {
-        return ticketService.obtenerTicketPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // ===== ACTUALIZAR =====
-    @PutMapping("/{id}")
-    public ResponseEntity<Ticket> actualizar(
-            @PathVariable Integer id,
+    // =========================
+    // CREAR TICKET DESDE USUARIO LOGUEADO
+    // =========================
+    @PostMapping("/usuario/{idUsuario}")
+    public ResponseEntity<Ticket> crearDesdeUsuario(
+            @PathVariable Integer idUsuario,
             @RequestBody Ticket ticket) {
 
-        return ResponseEntity.ok(ticketService.actualizarTicket(id, ticket));
+        return ResponseEntity.ok(
+                ticketService.crearDesdeUsuario(idUsuario, ticket)
+        );
     }
 
-    // ===== CERRAR =====
-    @PutMapping("/{id}/cerrar")
-    public ResponseEntity<Ticket> cerrar(@PathVariable Integer id) {
-        return ResponseEntity.ok(ticketService.cerrarTicket(id));
+    // =========================
+    // LISTAR TICKETS POR USUARIO
+    // =========================
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<Ticket>> listarPorUsuario(
+            @PathVariable Integer idUsuario) {
+
+        return ResponseEntity.ok(
+                ticketService.listarPorUsuario(idUsuario)
+        );
     }
 
-    // ===== ELIMINAR =====
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        ticketService.eliminarTicket(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // ===== BUSCAR POR CLIENTE =====
-    @GetMapping("/cliente/{idCliente}")
-    public ResponseEntity<List<Ticket>> listarPorCliente(@PathVariable Integer idCliente) {
-        return ResponseEntity.ok(ticketService.listarPorCliente(idCliente));
-    }
-
-    // ===== BUSCAR POR VENTA =====
-    @GetMapping("/venta/{idVenta}")
-    public ResponseEntity<Ticket> buscarPorVenta(@PathVariable Integer idVenta) {
-        return ticketService.buscarPorVenta(idVenta)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // =========================
+    // LISTAR TODOS (ADMIN)
+    // =========================
+    @GetMapping
+    public ResponseEntity<List<Ticket>> listarTodos() {
+        return ResponseEntity.ok(ticketService.listarTickets());
     }
 }

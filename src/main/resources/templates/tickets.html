@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestión de Tickets</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 40px;
+        }
+        input, select, button {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+        th {
+            background: #0f172a;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #0f172a;
+        }
+        .error {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .empty {
+            color: #94a3b8;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Crear Ticket</h2>
+
+<div class="card">
+    <input type="text" id="descripcion" placeholder="Descripción"><br>
+    <input type="number" id="cliente" placeholder="ID Cliente"><br>
+    <input type="number" id="producto" placeholder="ID Producto"><br>
+    <input type="number" id="venta" placeholder="ID Venta"><br>
+    <input type="number" id="prioridad" placeholder="ID Prioridad"><br>
+    <input type="number" id="tipo" placeholder="ID Tipo"><br>
+    <button onclick="crearTicket()">Crear</button>
+</div>
+
+<h2>Lista de Tickets</h2>
+<div id="lista" class="card"></div>
+
+<script>
+    function crearTicket() {
+        const descripcion = document.getElementById("descripcion").value;
+        const cliente = document.getElementById("cliente").value;
+        const producto = document.getElementById("producto").value;
+        const venta = document.getElementById("venta").value;
+        const prioridad = document.getElementById("prioridad").value;
+        const tipo = document.getElementById("tipo").value;
+
+        if (!descripcion || !cliente || !producto || !venta || !prioridad || !tipo) {
+            alert('Por favor completa todos los campos');
+            return;
+        }
+
+        fetch('/api/tickets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                descripcion: descripcion,
+                idCliente: parseInt(cliente),
+                idProducto: parseInt(producto),
+                idVenta: parseInt(venta),
+                prioridad: { idPrioridad: parseInt(prioridad) },
+                tipo: { idTipo: parseInt(tipo) }
+            })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Error al crear ticket');
+            document.getElementById("descripcion").value = '';
+            document.getElementById("cliente").value = '';
+            document.getElementById("producto").value = '';
+            document.getElementById("venta").value = '';
+            document.getElementById("prioridad").value = '';
+            document.getElementById("tipo").value = '';
+            alert('Ticket creado exitosamente');
+            cargarTickets();
+        })
+        .catch(err => alert('Error: ' + err.message));
+    }
+
+    function cargarTickets() {
+        fetch('/api/tickets')
+            .then(res => res.json())
+            .then(data => {
+                if (!data || data.length === 0) {
+                    document.getElementById("lista").innerHTML = '<p class="empty">No hay tickets disponibles</p>';
+                    return;
+                }
+                let html = '<table><thead><tr><th>ID</th><th>Descripción</th><th>Cliente</th><th>Producto</th><th>Estado</th><th>Prioridad</th></tr></thead><tbody>';
+                data.forEach(t => {
+                    html += `<tr>
+                        <td>${t.idTicket}</td>
+                        <td>${t.descripcion || 'N/A'}</td>
+                        <td>${t.idCliente}</td>
+                        <td>${t.idProducto}</td>
+                        <td>${t.estado?.nombre || 'N/A'}</td>
+                        <td>${t.prioridad?.nombre || 'N/A'}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById("lista").innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById("lista").innerHTML = '<p class="error">Error al cargar tickets: ' + err.message + '</p>';
+            });
+    }
+
+    cargarTickets();
+</script>
+
+</body>
+</html>

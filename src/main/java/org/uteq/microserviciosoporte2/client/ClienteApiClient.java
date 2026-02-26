@@ -45,4 +45,14 @@ public class ClienteApiClient {
             return null;
         }
     }
+
+    // 🔥 MÉTODO NUEVO CLAVE
+    public Map<String, Object> obtenerClientePorUsuario(Integer idUsuario) {
+        try {
+            String url = "http://localhost:8081/api/clientes/usuario/" + idUsuario;
+            return restTemplate.getForObject(url, Map.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

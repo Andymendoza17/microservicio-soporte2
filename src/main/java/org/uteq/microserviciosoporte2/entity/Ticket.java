@@ -1,12 +1,10 @@
 package org.uteq.microserviciosoporte2.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "ticket", schema = "public")
+@Table(name = "ticket")
 public class Ticket {
 
     @Id
@@ -14,19 +12,24 @@ public class Ticket {
     @Column(name = "id_ticket")
     private Integer idTicket;
 
-    // ===== IDS DE OTROS MICROSERVICIOS =====
-    @Column(name = "id_cliente", nullable = false)
-    private Integer idCliente;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario_creador", nullable = false)
+    private Usuario usuarioCreador;
 
-    @Column(name = "id_producto", nullable = false)
-    private Integer idProducto;
+    @Column(name = "id_cliente_externo", nullable = false)
+    private Long idClienteExterno;
 
-    @Column(name = "id_venta", nullable = false)
-    private Integer idVenta;
+    @Column(name = "id_producto_externo", nullable = false)
+    private Long idProductoExterno;
 
-    // ===== DATOS DEL TICKET =====
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "id_venta_externa")
+    private Long idVentaExterna;
+
+    @Column(nullable = false)
     private String descripcion;
+
+    @Column(name = "ruta_archivo")
+    private String rutaArchivo;
 
     @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)
@@ -40,94 +43,110 @@ public class Ticket {
     @JoinColumn(name = "id_tipo", nullable = false)
     private TipoIncidente tipo;
 
-    @Column(name = "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_cierre")
     private LocalDateTime fechaCierre;
 
-    // ===== RELACIONES =====
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<SeguimientoTicket> seguimientos;
-
-    // ===== GETTERS Y SETTERS =====
+    // =========================
+    // GETTERS
+    // =========================
 
     public Integer getIdTicket() {
         return idTicket;
     }
 
-    public void setIdTicket(Integer idTicket) {
-        this.idTicket = idTicket;
+    public Usuario getUsuarioCreador() {
+        return usuarioCreador;
     }
 
-    public Integer getIdCliente() {
-        return idCliente;
+    public Long getIdClienteExterno() {
+        return idClienteExterno;
     }
 
-    public void setIdCliente(Integer idCliente) {
-        this.idCliente = idCliente;
+    public Long getIdProductoExterno() {
+        return idProductoExterno;
     }
 
-    public Integer getIdProducto() {
-        return idProducto;
-    }
-
-    public void setIdProducto(Integer idProducto) {
-        this.idProducto = idProducto;
-    }
-
-    public Integer getIdVenta() {
-        return idVenta;
-    }
-
-    public void setIdVenta(Integer idVenta) {
-        this.idVenta = idVenta;
+    public Long getIdVentaExterna() {
+        return idVentaExterna;
     }
 
     public String getDescripcion() {
         return descripcion;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public String getRutaArchivo() {
+        return rutaArchivo;
     }
 
     public EstadoTicket getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoTicket estado) {
-        this.estado = estado;
-    }
-
     public PrioridadTicket getPrioridad() {
         return prioridad;
-    }
-
-    public void setPrioridad(PrioridadTicket prioridad) {
-        this.prioridad = prioridad;
     }
 
     public TipoIncidente getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoIncidente tipo) {
-        this.tipo = tipo;
-    }
-
     public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
     }
 
-    // 🔥 AGREGADO (esto faltaba)
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
     public LocalDateTime getFechaCierre() {
         return fechaCierre;
+    }
+
+    // =========================
+    // SETTERS
+    // =========================
+
+    public void setIdTicket(Integer idTicket) {
+        this.idTicket = idTicket;
+    }
+
+    public void setUsuarioCreador(Usuario usuarioCreador) {
+        this.usuarioCreador = usuarioCreador;
+    }
+
+    public void setIdClienteExterno(Long idClienteExterno) {
+        this.idClienteExterno = idClienteExterno;
+    }
+
+    public void setIdProductoExterno(Long idProductoExterno) {
+        this.idProductoExterno = idProductoExterno;
+    }
+
+    public void setIdVentaExterna(Long idVentaExterna) {
+        this.idVentaExterna = idVentaExterna;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
+    }
+
+    public void setEstado(EstadoTicket estado) {
+        this.estado = estado;
+    }
+
+    public void setPrioridad(PrioridadTicket prioridad) {
+        this.prioridad = prioridad;
+    }
+
+    public void setTipo(TipoIncidente tipo) {
+        this.tipo = tipo;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 
     public void setFechaCierre(LocalDateTime fechaCierre) {
