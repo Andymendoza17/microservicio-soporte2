@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Construir proyecto
+        run: mvn clean package -DskipTests
+
+      - name: Construir imagen Docker
+        run: docker build -t microservicio-soporte2 .
+
+      - name: Conectar a VM y desplegar
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 20.150.216.143
+          username: AdminEma
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd microservicio-soporte2
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
